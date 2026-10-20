@@ -1,0 +1,61 @@
+<aside>
+  <div class="bt mb editor-options">
+    <p onclick="changeFontSize(-1)" href="" class="min-plus-sign">-</p>
+    <p onclick="changeColor()" href="" class="colors">colors</p>
+    <p onclick="changeFontSize(1)" href="" class="min-plus-sign">+</p>
+  </div>
+  <p onclick="saveConfig()" class="bt mb">save config</p>
+  <p onclick="openDialog('renameDialog')" class="bt mb">rename</p>
+
+</aside>
+
+<main>
+  {{#if message}}
+    <p class="message">{{message}}</p>
+  {{/if}}
+  <h1>Preview <a href="/preview?file={{file}}">{{file}}</a></h1>
+  <form action="/saveFile" method="POST">
+    <div class="editorContainer">
+      <div id="lines"></div>
+      <textarea
+        name="content"
+        id="textEditor"
+        spellcheck="false"
+      >{{fileContent}}</textarea>
+      <input type="hidden" name="file" value="{{file}}" />
+    </div>
+    <div class="controls">
+      <button type="submit" class="bt">Save File</button>
+      {{! <button type="button" onclick="changeFontSize(1)" class="bt">Increase Font</button> }}
+      {{! <button type="button" onclick="changeFontSize(-1)" class="bt">Decrease }}
+      {{! Font</button> }}
+      {{! <button type="button" onclick="changeColor()" class="bt">Change Color</button> }}
+      {{! <button type="button" onclick="saveConfig()" class="bt">Save Config</button> }}
+    </div>
+  </form>
+</main>
+
+<dialog id="renameDialog">
+  <p id="dialogTitle">rename file</p>
+  <form action="/renameFile" method="POST">
+    <input type="text" name="renamed" required="true" />
+    <select name="extension">
+      {{#each extensions}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    {{! <input type="hidden" id="dialogType" name="type" value="folder" /> }}
+    <input type="hidden" name="root" value="{{file}}" />
+    <input type="hidden" name="next" value="textEditor" />
+
+    <div>
+      <button class="bt" type="submit">rename</button>
+      <p
+        class="bt"
+        onclick="document.getElementById('renameDialog').close()"
+      >cancel</p>
+    </div>
+  </form>
+</dialog>
+
+<script src="/js/textEditor.js"> </script>

@@ -1,0 +1,112 @@
+<aside>
+  {{! <p class="mb">filemanager</p> }}
+  {{! <a href="/createFolder" class="bt mb">new folder</a> }}
+  <p onclick="openDialog('folderDialog')" class="bt mb">new folder</p>
+  <p onclick="openDialog('fileDialog')" class="bt mb">new file</p>
+  {{! <a href="/createFile" class="bt mb">new file</a> }}
+  {{#if (isEqual root (concat "/" login.login))}}
+  {{else}}
+  <p onclick="openDialog('renameDialog')" class="bt mb">rename</p>
+  {{/if}}
+  <form enctype="multipart/form-data" class="upload-form" action="/handleUpload" method="POST">
+    <label class="bt mb" for="file">Select file (s) to upload</label>
+    <input type="file" name="fileUpload" id="file" {{! accept="image/*" }} multiple="true" {{! required }} />
+    <input type="hidden" name="root" value="{{root}}" />
+    <button class="uploadBtn" type="submit">upload</button>
+  </form>
+</aside>
+<main>
+  {{#if message}}
+  <p class="message">{{message}}</p>
+  {{/if}}
+  <section class="linkContainer">
+    {{#each navigation}}
+    <a class="links" href="/filemanager?name={{this.link}}">{{short this.name}}</a>
+    &gt
+    {{/each}}
+  </section>
+  <section>
+    <p class="folders-container">folders</p>
+    {{#each folders}}
+
+    <div class="folder">
+      <img src="/gfx/directory.png" alt="" width="25" />
+      <a class="deleteFile" href="/deleteFile?name={{../root}}/{{this}}&root={{../root}}">x</a>
+      <br>
+      <a class="links" href="/filemanager?name={{../root}}/{{this}}">{{short this}}</a>
+    </div>
+    {{/each}}
+  </section>
+
+  <section>
+    <p class="files-container">files</p>
+    {{#each files}}
+    <div class="file">
+      <img src="{{icon this}}" alt="" width="25" />
+      <a class="deleteFile" href="/deleteFile?name={{../root}}/{{this}}&root={{../root}}">x</a>
+      <br>
+      {{#if (isImage ../root this)}}
+    <a class="links" href="/imageEditor?name={{../root}}/{{this}}">{{short this}}</a>
+  {{else if (isTextExtension this)}}
+    <a class="links" href="/textEditor?name={{../root}}/{{this}}">{{short this}}</a>
+  {{else}}
+    <a class="links" href="?name={{../root}}&message=unsupported%20file">{{short this}}</a>
+  {{/if}}
+      
+    </div>
+    {{/each}}
+  </section>
+</main>
+
+<dialog id="fileDialog">
+  <p>new file name:</p>
+  <form action="/createFile">
+    <input type="text" name="name" required="true"/>
+    <input type="hidden" id="dialogType" name="type" value="file" />
+    <select name="extension">
+      {{#each extensions}}
+      <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <input type="hidden" name="root" value="{{root}}" />
+
+    <div>
+      <button class="bt" type="submit">create</button>
+      <p class="bt" onclick="document.getElementById('fileDialog').close()">cancel</p>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="folderDialog">
+  <p id="dialogTitle">new file name:</p>
+  <form action="/createFile">
+    <input type="text" name="name" required="true"/>
+    <input type="hidden" id="dialogType" name="type" value="folder" />
+    <input type="hidden" name="root" value="{{root}}" />
+
+    <div>
+      <button class="bt" type="submit">create</button>
+      <p class="bt" onclick="document.getElementById('folderDialog').close()">cancel</p>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="renameDialog">
+  <p id="dialogTitle">rename file</p>
+  <form action="/renameFile" method="POST">
+    <input type="text" name="renamed" required="true" />
+    {{!-- <input type="hidden" id="dialogType" name="type" value="folder" /> --}}
+    <input type="hidden" name="root" value="{{root}}" />
+    <input type="hidden" name="next" value="filemanager" />
+
+    <div>
+      <button class="bt" type="submit">rename</button>
+      <p class="bt" onclick="document.getElementById('renameDialog').close()">cancel</p>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  function openDialog(id) { document.getElementById(id).showModal() }
+
+</script>

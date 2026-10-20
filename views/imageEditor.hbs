@@ -1,0 +1,45 @@
+<aside>
+  <p onclick="showFilters()" class="bt mb">filters</p>
+  <p onclick="document.getElementById('renameDialog').showModal()" class="bt mb">rename</p>
+  <p onclick="saveImage()" class="bt mb">save file</p>
+
+</aside>
+<div id="filters">
+    <p style="color: white;">original</p>
+  {{#each effects}}
+    <p style="color: white;">{{name}}</p>
+    <div onclick="applyFilter('{{name}}({{value}})')" class="img-preview" style="background-image:url('{{../filepath}}');filter:{{name}}({{value}})">
+    </div>
+  {{/each}}
+</div>
+<main>
+  {{#if message}}
+    <p class="message">{{message}}</p>
+  {{/if}}
+  <h1>Preview <a href="/preview?file={{file}}">{{file}}</a>  <span id="res"></span></h1>
+    <canvas id="img-canvas"></canvas>
+</main>
+
+<dialog id="renameDialog">
+  <p id="dialogTitle">rename file</p>
+  <form action="/renameFile" method="POST">
+    <input type="text" name="renamed" />
+       <select name="extension">
+      {{#each extensions}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <input type="hidden" name="root" value="{{file}}" />
+    <input type="hidden" name="next" value="imageEditor" />
+
+    <div>
+      <button class="bt" type="submit">rename</button>
+      <p
+        class="bt"
+        onclick="document.getElementById('renameDialog').close()"
+      >cancel</p>
+    </div>
+  </form>
+</dialog>
+<script>window.filepath= "{{filepath}}"</script>
+<script src="/js/imageEditor.js"> </script>
